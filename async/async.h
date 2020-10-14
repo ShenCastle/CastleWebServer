@@ -5,7 +5,7 @@
 
 class Sem {
 private:
-    sem_t sem_;
+    sem_t sem;
 public:
     Sem();
     Sem(int num);
@@ -16,7 +16,7 @@ public:
 
 class Mutex {
 private:
-    pthread_mutex_t mutex_;
+    pthread_mutex_t mutex;
 public:
     Mutex();
     ~Mutex();
@@ -27,12 +27,12 @@ public:
 
 class Cond {
 private:
-    pthread_cond_t cond_;
+    pthread_cond_t cond;
 public:
     Cond();
     ~Cond();
-    bool wait(pthread_mutex_t* mutex_);
-    bool timedwait(pthread_mutex_t* mutex_, timespec t);
+    bool wait(pthread_mutex_t* mutex);
+    bool timedwait(pthread_mutex_t* mutex, timespec t);
     bool broadcast();
     bool signal();
 };
