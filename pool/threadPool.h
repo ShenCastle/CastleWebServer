@@ -2,7 +2,7 @@
 #include <vector>
 #include <exception>
 #include <pthread.h>
-#include "../async/async.h"
+#include "../sync/sync.h"
 
 
 template<typename T>
