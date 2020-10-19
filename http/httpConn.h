@@ -5,6 +5,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <regex>
+#include <sys/mman.h>
+#include <stdarg.h>
 #include <string>
 #include <unordered_map>
 
@@ -68,7 +70,7 @@ private:
     int contentLen;
     bool linger; */
     std::string fileName;
-    std::string fileAddr;
+    char* fileAddr;
     struct stat fileStat;
     struct iovec iv[2];
     int ivCount;
@@ -84,16 +86,16 @@ private:
     void modfd(int epollfd, int fd, int ev);
     void init();
     HTTP_CODE processRead();
-    bool processWrite(HTTP_CODE res);
     HTTP_CODE parseReqLine(const std::string& text);
     HTTP_CODE parseHeader(const std::string& text);
     HTTP_CODE parseBody(const std::string& text);
     LINE_STATUS parseLine();
     HTTP_CODE handleReq();
     void unmap();
+    bool processWrite(HTTP_CODE res);
     bool addRes(const std::string& format, ...);
-    bool addContent(const std::string& content);
     bool addStatusLine(int status, const std::string& title);
+    bool addContent(const std::string& content);
     bool addHeader(int contenLength);
     bool addContentType();
     bool addContentLength(int contentLength);

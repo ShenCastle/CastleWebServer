@@ -94,7 +94,7 @@ HttpConn::HTTP_CODE HttpConn::parseReqLine(const std::string& text) {
             return BAD_REQUEST;
         }
         version = matchRes[3];
-        if (url != "HTTP/1.1") {
+        if (version != "HTTP/1.1") {
             return BAD_REQUEST;
         }
         checkState = CHECK_STATE_HEADER;
@@ -124,6 +124,40 @@ HttpConn::HTTP_CODE HttpConn::parseBody(const std::string& text) {
         return GET_REQUEST;
     }
     return NO_REQUEST;
+}
+HttpConn::HTTP_CODE HttpConn::handleReq() {
+    fileName = docRoot + url;
+    if (stat(fileName.data(), &fileStat) < 0) {
+        return NO_RESOURCE;
+    }
+    if (!(fileStat.st_mode & S_IROTH)) {
+        return FORBIDDEN_REQUEST;
+    }
+    if (S_ISDIR(fileStat.st_mode)) {
+        return BAD_REQUEST;
+    }
+    int srcfd = open(fileName.data(), O_RDONLY);
+    fileAddr = (char*)mmap(0, fileStat.st_size, PROT_READ, MAP_PRIVATE, srcfd, 0);
+    close(srcfd);
+    return FILE_REQUEST;
+}
+bool HttpConn::addRes(const std::string& format, ...) {
+    if (writeIdx >= WRITE_BUFFER_SIZE) {
+        return false;
+    }
+    va_list args;
+    va_start(args, format);
+    int len = vsnprintf(writeBuffer + writeIdx, WRITE_BUFFER_SIZE - writeIdx - 1, format.data(), args);
+    if (len >= WRITE_BUFFER_SIZE - 1 - writeIdx) {
+        va_end(args);
+        return false;
+    }
+    writeIdx += len;
+    va_end(args);
+    return true;
+}
+bool HttpConn::addStatusLine(int status, const std::string& title) {
+    return addRes("%s %d %s\r\n", "HTTP/1.1", status, title);
 }
 bool HttpConn::read() {
     if (readIdx >= READ_BUFFER_SIZE) {
