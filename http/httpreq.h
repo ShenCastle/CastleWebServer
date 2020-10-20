@@ -45,10 +45,10 @@ public:
     ~HttpReq() = default;
     void Init();
     bool Parse(Buffer& buff);
-    std::string path() const;
-    std::string& path();
-    std::string method() const;
-    std::string version() const;
+    std::string GetPath() const;
+    std::string& GetPath();
+    std::string GetMethod() const;
+    std::string GetVersion() const;
     std::string GetPost(const std::string& key) const;
     std::string GetPost(const char* key) const;
     bool IsKeepAlive() const;

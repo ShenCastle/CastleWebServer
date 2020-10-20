@@ -85,15 +85,15 @@ void HttpRes::UnmapFile() {
     }
 }
 
-char* HttpRes::file() const {
+char* HttpRes::GetFile() const {
     return file_;
 }
 
-size_t HttpRes::FileLen() const {
+size_t HttpRes::GetFileLen() const {
     return file_stat_.st_size;
 }
 
-int HttpRes::code() const {
+int HttpRes::GetCode() const {
     return code_;
 }
 

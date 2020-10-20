@@ -29,7 +29,7 @@ public:
     void Init(const std::string& src_dir, const std::string& path, bool is_keep_alive = false, int code = -1);
     void Generate(Buffer& buff);
     void UnmapFile();
-    char* file() const;
-    size_t FileLen() const;
-    int code() const;
+    char* GetFile() const;
+    size_t GetFileLen() const;
+    int GetCode() const;
 };

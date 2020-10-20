@@ -53,18 +53,18 @@ bool HttpReq::Parse(Buffer& buff) {
     return true;
 }
 
-string HttpReq::path() const{
+string HttpReq::GetPath() const{
     return path_;
 }
 
-string& HttpReq::path(){
+string& HttpReq::GetPath(){
     return path_;
 }
-string HttpReq::method() const {
+string HttpReq::GetMethod() const {
     return method_;
 }
 
-string HttpReq::version() const {
+string HttpReq::GetVersion() const {
     return version_;
 }
 
