@@ -27,23 +27,23 @@ bool HttpReq::Parse(Buffer& buff) {
         const char* line_end = search(buff.Peek(), buff.BeginWriteConst(), CRLF, CRLF + 2);
         string line(buff.Peek(), line_end);
         switch (state_) {
-            case REQUEST_LINE:
-                if (!ParseReqLine_(line)) {
-                    return false;
-                }
-                ParsePath_();
-                break;
-            case HEADER:
-                ParseHeader_(line);
-                if (buff.ReadableBytes() <= 2) {
-                    state_ = FINISH;
-                }
-                break;
-            case BODY:
-                ParseBody_(line);
-                break;
-            default:
-                break;
+        case REQUEST_LINE:
+            if (!ParseReqLine_(line)) {
+                return false;
+            }
+            ParsePath_();
+            break;
+        case HEADER:
+            ParseHeader_(line);
+            if (buff.ReadableBytes() <= 2) {
+                state_ = FINISH;
+            }
+            break;
+        case BODY:
+            ParseBody_(line);
+            break;
+        default:
+            break;
         }
         if (line_end == buff.BeginWrite()) {
             break;
@@ -128,7 +128,13 @@ void HttpReq::ParsePost_() {
             int tag = DEFAULT_HTML_TAG.find(path_)->second;
             if (tag == 0 || tag == 1) {
                 bool is_login = (tag == 1);
-                if (UserVerify_(post_["username"], post_["password"], is_login)) {
+                /* if (UserVerify_(post_["username"], post_["password"], is_login)) {
+                    path_ = "/welcome.html";
+                } 
+                else {
+                    path_ = "/error.html";
+                } */
+                if (is_login) {
                     path_ = "/welcome.html";
                 } 
                 else {
@@ -151,4 +157,54 @@ void HttpReq::ParsePath_() {
             }
         }
     }
+}
+
+void HttpReq::ParseFromUrlencoded_() {
+    int n = body_.size();
+    if (!n) {
+        return;
+    }
+    string key = "", value = "";
+    int num = 0;
+    int i = 0, j = 0;
+    for (; i < n; i++) {
+        char c = body_[i];
+        switch (c) {
+        case '=':
+            key = body_.substr(j, i - j);
+            j = i + 1;
+            break;
+        case '+':
+            body_[i] = ' ';
+            break;
+        case '%':
+            num = ConverHex(body_[i + 1]) * 16 + ConverHex(body_[i + 2]);
+            body_[i + 2] = num % 10 + '0';
+            body_[i + 1] = num / 10 + '0';
+            i += 2;
+            break;
+        case '&':
+            value = body_.substr(j, i - j);
+            j = i + 1;
+            post_[key] = value;
+            break;
+        default:
+            break;
+        }
+    }
+    assert(j <= i);
+    if (!post_.count(key) && j < i) {
+        value = body_.substr(j, i - j);
+        post_[key] = value;
+    }
+}
+
+int HttpReq::ConverHex(char c) {
+    if (c >= 'A' && c <= 'F') {
+        return c - 'A' + 10;
+    }
+    if (c >= 'a' && c <= 'f') {
+        return c - 'a' + 10;
+    }
+    return c;
 }

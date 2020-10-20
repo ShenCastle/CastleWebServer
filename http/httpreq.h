@@ -15,8 +15,8 @@ private:
     void ParsePost_();
     void ParsePath_();
     void ParseFromUrlencoded_();
-    static bool UserVerify_(const std::string& name, const std::string& pwd, bool is_login);
-    static int ConverHex(char ch);
+    // static bool UserVerify_(const std::string& name, const std::string& pwd, bool is_login);
+    static int ConverHex(char c);
     enum PARSE_STATE {
         REQUEST_LINE,
         HEADER,
