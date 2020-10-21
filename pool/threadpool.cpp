@@ -1,75 +1,45 @@
 #include "threadpool.h"
 
 
-template<typename T>
-ThreadPool<T>::ThreadPool(int threadNum_, int maxReq_): threadNum(threadNum_), maxReq(maxReq_) {
-    if (threadNum_ <= 0 || maxReq_ <= 0) {
-        throw std::exception();
-    }
-    threads.resize(threadNum);
-    for (int i = 0; i < threadNum; i++) {
-        if (pthread_create(threads, nullptr, handle, this)) {
-            throw std::exception();
-        }
-        if (pthread_detach(threads[i])) {
-            throw std::exception();
-        }
+ThreadPool::ThreadPool(size_t thead_num): pool_(std::make_shared<Pool>()) {
+    assert(thead_num > 0);
+    for (size_t i = 0; i < thead_num; i++) {
+        std::thread([pool = pool_] {
+            std::unique_lock<std::mutex> locker(pool->mtx);
+            while (true) {
+                if (!pool->tasks.empty()) {
+                    auto task = std::move(pool->tasks.front());
+                    pool->tasks.pop();
+                    locker.unlock();
+                    task();
+                    locker.lock();
+                }
+                else if (pool->is_close) {
+                    break;
+                }
+                else {
+                    pool->cond.wait(locker);
+                }
+            }
+        }).detach();
     }
 }
-template<typename T>
-ThreadPool<T>::~ThreadPool() {}
-template<typename T>
-bool ThreadPool<T>::addTask(T* req, int state) {
-    mutex.lock();
-    if (taskQueue.size() >= maxReq) {
-        mutex.unlock();
-        return false;
+
+ThreadPool::~ThreadPool() {
+    if (static_cast<bool>(pool_)) {
+        {
+            std::lock_guard<std::mutex> locker(pool_->mtx);
+            pool_->is_close = true;
+        }
+        pool_->cond.notify_all();
     }
-    req->state = state;
-    taskQueue.push_back(req);
-    mutex.unlock();
-    sem.post();
-    return true;
 }
+
 template<typename T>
-void* ThreadPool<T>::handle(void* arg) {
-    ThreadPool* pool = (ThreadPool*)arg;
-    pool->run();
-    return pool;
-}
-template<typename T>
-void ThreadPool<T>::run() {
-    while (true) {
-        sem.wait();
-        mutex.lock();
-        if (taskQueue.empty()) {
-            mutex.unlock();
-            continue;
-        }
-        T* req = taskQueue.front();
-        taskQueue.pop_front();
-        mutex.unlock();
-        if (!req) {
-            continue;
-        }
-        if (req->state == 0) {
-            if (req->readOnce()) {
-                req->improv = 1;
-                req.process();
-            }
-            else {
-                req->improv = 1;
-                req->timerFlag = 1;
-            }
-        }
-        else {
-            if (req->write()) {
-                req->improv = 1;
-            }
-            else {
-                req->improv = 1;
-                req->timerFlag = 1;
-            }
-        }
+void ThreadPool::AddTask(T&& task) {
+    {
+        std::lock_guard<std::mutex> locker(pool_->mtx);
+        pool_->tasks.emplace(std::forward<T>(task));
     }
+    pool_->cond.notify_one();
 }

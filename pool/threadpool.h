@@ -1,23 +1,26 @@
-#include <list>
-#include <vector>
-#include <exception>
-#include <pthread.h>
-#include "../sync/sync.h"
+#include <mutex>
+#include <condition_variable>
+#include <queue>
+#include <functional>
+#include <thread>
+#include <assert.h>
 
 
-template<typename T>
-class ThreadPool {
+class ThreadPool
+{
 private:
-    int threadNum;
-    int maxReq;
-    std::vector<pthread_t> threads;
-    std::list<T*> taskQueue;
-    Mutex mutex;
-    Sem sem;
-    static void* handle(void* arg);
-    void run();
+    struct Pool {
+        std::mutex mtx;
+        std::condition_variable cond;
+        bool is_close;
+        std::queue<std::function<void()>> tasks;
+    };
+    std::shared_ptr<Pool> pool_;
 public:
-    ThreadPool(int threadNum_ = 8, int maxReq_ = 10000);
+    explicit ThreadPool(size_t thread_num = 8);
+    ThreadPool() = default;
+    ThreadPool(ThreadPool&&) = default;
     ~ThreadPool();
-    bool addTask(T* req, int state);
+    template<typename T>
+    void AddTask(T&& task);
 };
