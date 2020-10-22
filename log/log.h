@@ -27,8 +27,8 @@ private:
     int level_;
     bool is_async_;
     FILE* fp_;
-    std::unique_lock<BlockDeque<std::string>> deque_;
-    std::unique_lock<std::thread> write_thread_;
+    std::unique_ptr<BlockDeque<std::string>> deque_;
+    std::unique_ptr<std::thread> write_thread_;
     std::mutex mtx_;
 public:
     void Init(int level, const char* path = "./log", 
