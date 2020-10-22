@@ -2,7 +2,6 @@
 #include <mutex>
 #include <condition_variable>
 #include <chrono>
-#include "../sync/sync.h"
 
 
 template<typename T>
