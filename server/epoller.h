@@ -1,9 +1,7 @@
 #include <vector>
 #include <sys/epoll.h>
-#include <fcntl.h>
 #include <unistd.h>
 #include <assert.h>
-#include <errno.h>
 
 
 class Epoller {
