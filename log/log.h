@@ -1,6 +1,7 @@
 #include <string>
 #include <thread>
 #include <mutex>
+#include <sys/time.h>
 #include <stdarg.h>
 #include <assert.h>
 #include <sys/stat.h>
@@ -14,12 +15,10 @@ private:
     virtual ~Log();
     void AppendLogLevelTitle_(int level);
     void AsyncWrite_();
-    static const int LOG_PATH_LEN = 256;
     static const int LOG_NAME_LEN = 256;
     static const int MAX_LINES = 50000;
     const char* path_;
     const char* suffix_;
-    int MAX_LINES_;
     int line_cnt_;
     int to_day_;
     bool is_open_;
@@ -31,13 +30,13 @@ private:
     std::unique_ptr<std::thread> write_thread_;
     std::mutex mtx_;
 public:
-    void Init(int level, const char* path = "./log", 
+    void Init(int level = 1, const char* path = "./log", 
                 const char* suffix = ".log",
                 int max_queue_capacity = 1024);
-    static Log* Instance();
-    static void FlushLogThread();
     void Write(int level, const char* format, ...);
     void Flush();
+    static void FlushLogThread();
+    static Log* Instance();
     int GetLevel();
     void SetLevel(int level);
     bool IsOpen() const;
