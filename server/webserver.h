@@ -15,25 +15,25 @@
 
 class WebServer {
 private:
-    bool InitSocket_();
     void InitEventMode_(int trig_mode);
-    void AddClient_(int fd, sockaddr_in addr);
+    bool InitSocket_();
     void HandleListen_();
+    void CloseConn_(HttpConn* client);
     void HandleRead_(HttpConn* client);
     void HandleWrite_(HttpConn* client);
+    void AddClient_(int fd, struct sockaddr_in addr);
     void SendError_(int fd, const char* info);
-    void ExtentTime_(HttpConn* client);
-    void CloseConn_(HttpConn* client);
+    void ExtendTime_(HttpConn* client);
     void OnRead_(HttpConn* client);
     void OnWrite_(HttpConn* client);
     void OnProcess(HttpConn* client);
     static int SetFdNonBlock(int fd);
     static const int MAX_FD = 65536;
     int port_;
-    bool linger_;
+    bool open_linger_;
     int timeout_;
     bool is_close_;
-    int listenFd_;
+    int listen_fd_;
     char* src_dir_;
     uint32_t listen_event_;
     uint32_t connect_event_;
@@ -43,7 +43,7 @@ private:
     std::unordered_map<int, HttpConn> users_;
 public:
     WebServer(
-        int port, int trig_mode, int timeout, bool linger,
+        int port, int trig_mode, int timeout, bool open_linger,
         int thread_num, bool open_log, int log_level, int log_queque_size);
     ~WebServer();
     void Start();
