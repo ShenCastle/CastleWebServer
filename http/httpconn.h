@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <error.h>
+#include "../log/log.h"
 #include "../buffer/buffer.h"
 #include "httpreq.h"
 #include "httpres.h"

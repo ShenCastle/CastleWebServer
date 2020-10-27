@@ -11,6 +11,7 @@
 #include "../timer/heaptimer.h"
 #include "../pool/threadpool.h"
 #include "../http/httpconn.h"
+#include "../pool/sqlconnpool.h"
 
 
 class WebServer {
@@ -44,7 +45,9 @@ private:
 public:
     WebServer(
         int port, int trig_mode, int timeout, bool open_linger,
-        int thread_num, bool open_log, int log_level, int log_queque_size);
+        int sql_port, const char* sql_user, const char* sql_password,
+        const char* db, int conn_num, int thread_num,
+        bool open_log, int log_level, int log_queque_size);
     ~WebServer();
     void Start();
 };

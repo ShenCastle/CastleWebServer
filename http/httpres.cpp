@@ -133,6 +133,7 @@ void HttpRes::AddBody_(Buffer& buff) {
         ErrorBody_(buff, "File Not Found!");
         return;
     }
+    LOG_DEBUG("File path: %s", (src_dir_ + path_).c_str());
     int* ret = (int*)mmap(0, file_stat_.st_size, PROT_READ, MAP_PRIVATE, srcfd, 0);
     if (*ret == -1) {
         ErrorBody_(buff, "File Not Found!");

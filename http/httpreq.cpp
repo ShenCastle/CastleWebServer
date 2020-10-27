@@ -50,6 +50,7 @@ bool HttpReq::Parse(Buffer& buff) {
         }
         buff.RetrieveUntil(line_end + 2);
     }
+    LOG_DEBUG("[%s], [%s], [%s]", method_.c_str(), path_.c_str(), version_.c_str());
     return true;
 }
 
@@ -101,6 +102,7 @@ bool HttpReq::ParseReqLine_(const std::string& text) {
         state_ = HEADER;
         return true;
     }
+    LOG_ERROR("RequestLine Error!");
     return false;
 }
 
@@ -119,6 +121,7 @@ void HttpReq::ParseBody_(const string& line) {
     body_ = line;
     ParsePost_();
     state_ = FINISH;
+    LOG_DEBUG("Body: %s, len: %d", line.c_str(), line.size());
 }
 
 void HttpReq::ParsePost_() {
@@ -126,15 +129,10 @@ void HttpReq::ParsePost_() {
         ParseFromUrlencoded_();
         if (DEFAULT_HTML_TAG.count(path_)) {
             int tag = DEFAULT_HTML_TAG.find(path_)->second;
+            LOG_DEBUG("Tag: %d", tag);
             if (tag == 0 || tag == 1) {
                 bool is_login = (tag == 1);
-                /* if (UserVerify_(post_["username"], post_["password"], is_login)) {
-                    path_ = "/welcome.html";
-                } 
-                else {
-                    path_ = "/error.html";
-                } */
-                if (is_login) {
+                if (UserVerify(post_["username"], post_["password"], is_login)) {
                     path_ = "/welcome.html";
                 } 
                 else {
@@ -187,6 +185,7 @@ void HttpReq::ParseFromUrlencoded_() {
             value = body_.substr(j, i - j);
             j = i + 1;
             post_[key] = value;
+            LOG_DEBUG("%s = %s", key.c_str(), value.c_str());
             break;
         default:
             break;
@@ -197,6 +196,63 @@ void HttpReq::ParseFromUrlencoded_() {
         value = body_.substr(j, i - j);
         post_[key] = value;
     }
+}
+
+bool HttpReq::UserVerify(const string& name, const string& password, bool is_login) {
+    if (name == "" || password == "") {
+        return false;
+    }
+    LOG_INFO("Verify name: %s password: %s", name.c_str(), password.c_str());
+    MYSQL* sql = nullptr;
+    SqlConnRAII(&sql, SqlConnPool::Instance());
+    assert(sql);
+    bool flag = false;
+    char order[256] = {0};
+    MYSQL_FIELD *fields = nullptr;
+    MYSQL_RES *res = nullptr;
+    if (!is_login) {
+        flag = true;
+    }
+    snprintf(order, 256, "SELECT username, password FROM user WHERE username='%s' LIMIT 1", name.c_str());
+    LOG_DEBUG("%s", order);
+    if (mysql_query(sql, order)) {
+        mysql_free_result(res);
+        return false;
+    }
+    res = mysql_store_result(sql);
+    unsigned int fields_num = mysql_num_fields(res);
+    fields = mysql_fetch_fields(res);
+    while (MYSQL_ROW row = mysql_fetch_row(res)) {
+        LOG_DEBUG("MySql row: %s %s", row[0], row[1]);
+        string pwd(row[1]);
+        if (is_login) {
+            if (pwd == password) {
+                flag = true;
+            }
+            else {
+                flag = false;
+                LOG_DEBUG("Password error!");
+            }
+        }
+        else {
+            flag = false;
+            LOG_DEBUG("Username used!");
+        }
+    }
+    mysql_free_result(res);
+    if (!is_login && flag) {
+        LOG_DEBUG("Sign up!");
+        bzero(order, 256);
+        snprintf(order, 256, "INSERT INTO user(username, password) VALUES('%s', '%s')", name.c_str(), password.c_str());
+        LOG_DEBUG("%s", order);
+        if (mysql_query(sql, order)) {
+            LOG_DEBUG("Insert error!");
+            flag = false;
+        }
+    }
+    // SqlConnPool::Instance()->FreeConn(sql);
+    LOG_DEBUG("UserVerify completed!");
+    return flag;
 }
 
 int HttpReq::ConverHex(char c) {

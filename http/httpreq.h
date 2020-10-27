@@ -4,6 +4,8 @@
 #include <regex>
 #include <error.h>
 #include "../buffer/buffer.h"
+#include "../log/log.h"
+#include "../pool/sqlconnpool.h"
 
 
 class HttpReq
@@ -15,7 +17,7 @@ private:
     void ParsePost_();
     void ParsePath_();
     void ParseFromUrlencoded_();
-    // static bool UserVerify_(const std::string& name, const std::string& pwd, bool is_login);
+    static bool UserVerify(const std::string& name, const std::string& password, bool is_login);
     static int ConverHex(char c);
     enum PARSE_STATE {
         REQUEST_LINE,

@@ -26,6 +26,7 @@ void HttpConn::Init(int fd, const sockaddr_in& addr) {
     read_buff_.RetrieveAll();
     write_buff_.RetrieveAll();
     is_close_ = false;
+    LOG_INFO("Client[%d](%s: %d) in, user count: %d", fd_, GetIP(), GetPort(), int(user_cnt));
 }
 
 void HttpConn::Close() {
@@ -34,6 +35,7 @@ void HttpConn::Close() {
         is_close_ = true;
         user_cnt--;
         close(fd_);
+        LOG_INFO("Client[%d](%s: %d) quit, user count: %d", fd_, GetIP(), GetPort(), int(user_cnt));
     }
 }
 
@@ -43,6 +45,7 @@ bool HttpConn::Process() {
         return false;
     }
     else if (request_.Parse(read_buff_)) {
+        LOG_DEBUG("%s", request_.GetPath().c_str());
         response_.Init(src_dir, request_.GetPath(), request_.IsKeepAlive(), 200);
     }
     else {
@@ -57,6 +60,7 @@ bool HttpConn::Process() {
         iov_[1].iov_len = response_.GetFileLen();
         iov_cnt_ = 2;
     }
+    LOG_DEBUG("File size: %d, %d to %d", response_.GetFileLen(), iov_cnt_, ToWriteBytes());
     return true;
 }
 

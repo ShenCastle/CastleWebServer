@@ -13,9 +13,9 @@ SqlConnPool* SqlConnPool::Instance() {
 
 void SqlConnPool::Init(const char* host, int port,
                        const char* user, const char* password,
-                       const char* db, int conn_size) {
-    assert(conn_size > 0);
-    for (int i = 0; i < conn_size; i++) {
+                       const char* db, int conn_num) {
+    assert(conn_num > 0);
+    for (int i = 0; i < conn_num; i++) {
         MYSQL* sql = nullptr;
         sql = mysql_init(sql);
         if (!sql) {
@@ -28,7 +28,7 @@ void SqlConnPool::Init(const char* host, int port,
         }
         conn_queue_.push(sql);
     }
-    max_conn_ = conn_size;
+    max_conn_ = conn_num;
     sem_init(&sem_, 0, max_conn_);
 }
 

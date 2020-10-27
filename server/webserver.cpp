@@ -4,7 +4,9 @@ using namespace std;
 
 WebServer::WebServer(
             int port, int trig_mode, int timeout, bool open_linger,
-            int thread_num, bool open_log, int log_level, int log_queque_size):
+            int sql_port, const char* sql_user, const char* sql_password,
+            const char* db, int conn_num, int thread_num,
+            bool open_log, int log_level, int log_queque_size):
             port_(port), open_linger_(open_linger), timeout_(timeout), is_close_(false),
             timer_(new HeapTimer()), threadpool_(new ThreadPool(thread_num)), epoller_(new Epoller()) {
     src_dir_ = getcwd(nullptr, 256);
@@ -12,6 +14,7 @@ WebServer::WebServer(
     strncat(src_dir_, "/resources/", 16);
     HttpConn::user_cnt = 0;
     HttpConn::src_dir = src_dir_;
+    SqlConnPool::Instance()->Init("localhost", sql_port, sql_user, sql_password, db, conn_num);
     InitEventMode_(trig_mode);
     if (!InitSocket_()) {
         is_close_ = true;
@@ -29,6 +32,7 @@ WebServer::WebServer(
                     (connect_event_ & EPOLLET ? "ET" : "LT"));
             LOG_INFO("Log Level: %d", log_level);
             LOG_INFO("SrcDir: %s", src_dir_);
+            LOG_INFO("SqlConnPool num: %d, ThreadPool num: %d", conn_num, thread_num);
         }
     }
 }
@@ -37,6 +41,7 @@ WebServer::~WebServer() {
     close(listen_fd_);
     is_close_ = true;
     free(src_dir_);
+    SqlConnPool::Instance()->Close();
 }
 
 void WebServer::Start() {

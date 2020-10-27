@@ -18,7 +18,7 @@ public:
     static SqlConnPool* Instance();
     void Init(const char* host, int port,
               const char* user, const char* password,
-              const char* db, int conn_size);
+              const char* db, int conn_num);
     void Close();
     MYSQL* GetConn();
     void FreeConn(MYSQL* conn);
