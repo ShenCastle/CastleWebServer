@@ -25,7 +25,13 @@ public:
     ThreadPool(ThreadPool&&) = default;
     ~ThreadPool();
     template<typename T>
-    void AddTask(T&& task);
+    void AddTask(T&& task) {
+        {
+            std::lock_guard<std::mutex> locker(pool_->mtx);
+            pool_->tasks.emplace(std::forward<T>(task));
+        }
+        pool_->cond.notify_one();
+    }
 };
 
 #endif

@@ -208,7 +208,7 @@ bool HttpReq::UserVerify(const string& name, const string& password, bool is_log
     assert(sql);
     bool flag = false;
     char order[256] = {0};
-    MYSQL_FIELD *fields = nullptr;
+    // MYSQL_FIELD *fields = nullptr;
     MYSQL_RES *res = nullptr;
     if (!is_login) {
         flag = true;
@@ -220,8 +220,8 @@ bool HttpReq::UserVerify(const string& name, const string& password, bool is_log
         return false;
     }
     res = mysql_store_result(sql);
-    unsigned int fields_num = mysql_num_fields(res);
-    fields = mysql_fetch_fields(res);
+    // unsigned int fields_num = mysql_num_fields(res);
+    // fields = mysql_fetch_fields(res);
     while (MYSQL_ROW row = mysql_fetch_row(res)) {
         LOG_DEBUG("MySql row: %s %s", row[0], row[1]);
         string pwd(row[1]);
