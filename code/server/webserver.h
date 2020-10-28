@@ -1,6 +1,7 @@
 #ifndef WEBSERVER_H
 #define WEBSERVER_H
 
+#include <string>
 #include <unordered_map>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -48,8 +49,8 @@ private:
 public:
     WebServer(
         int port, int trig_mode, int timeout, bool open_linger,
-        int sql_port, const char* sql_user, const char* sql_password,
-        const char* db, int conn_num, int thread_num,
+        int sql_port, const std::string& sql_user, const std::string& sql_password,
+        const std::string& db, int conn_num, int thread_num,
         bool open_log, int log_level, int log_queque_size);
     ~WebServer();
     void Start();

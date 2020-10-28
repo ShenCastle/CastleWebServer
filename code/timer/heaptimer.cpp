@@ -68,7 +68,8 @@ int HeapTimer::GetNextTick() {
     return res;
 }
 
-void HeapTimer::Del_(size_t i) {
+void HeapTimer::Del_(size_t i_) {
+    int i = i_;
     int n = heap_.size() - 1;
     assert(!heap_.empty() && i >= 0 && i <= n);
     if (i < n) {

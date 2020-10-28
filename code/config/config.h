@@ -3,6 +3,7 @@
 
 #include <getopt.h>
 #include <stdlib.h>
+#include <string>
 
 
 class Config {
@@ -15,9 +16,9 @@ public:
     int timeout;
     bool open_linger;
     int sql_port;
-    char* sql_user;
-    char* sql_password;
-    char* db;
+    std::string sql_user;
+    std::string sql_password;
+    std::string db;
     int conn_num;
     int thread_num;
     bool open_log;

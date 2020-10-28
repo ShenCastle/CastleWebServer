@@ -86,7 +86,7 @@ void Log::Write(int level, const char* format, ...) {
             line_cnt_ = 0;
         }
         else {
-            snprintf(file_name, LOG_NAME_LEN - 72, "%s/%s-d%s", path_, tail, (line_cnt_ / MAX_LINES), suffix_);
+            snprintf(file_name, LOG_NAME_LEN - 72, "%s/%s-%d%s", path_, tail, (line_cnt_ / MAX_LINES), suffix_);
         }
         locker.lock();
         Flush();

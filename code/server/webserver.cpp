@@ -4,8 +4,8 @@ using namespace std;
 
 WebServer::WebServer(
             int port, int trig_mode, int timeout, bool open_linger,
-            int sql_port, const char* sql_user, const char* sql_password,
-            const char* db, int conn_num, int thread_num,
+            int sql_port, const string& sql_user, const string& sql_password,
+            const string& db, int conn_num, int thread_num,
             bool open_log, int log_level, int log_queque_size):
             port_(port), open_linger_(open_linger), timeout_(timeout), is_close_(false),
             timer_(new HeapTimer()), threadpool_(new ThreadPool(thread_num)), epoller_(new Epoller()) {
@@ -14,7 +14,7 @@ WebServer::WebServer(
     strncat(src_dir_, "/resources/", 16);
     HttpConn::user_cnt = 0;
     HttpConn::src_dir = src_dir_;
-    SqlConnPool::Instance()->Init("localhost", sql_port, sql_user, sql_password, db, conn_num);
+    SqlConnPool::Instance()->Init("localhost", sql_port, sql_user.c_str(), sql_password.c_str(), db.c_str(), conn_num);
     InitEventMode_(trig_mode);
     if (!InitSocket_()) {
         is_close_ = true;
