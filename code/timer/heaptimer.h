@@ -1,3 +1,6 @@
+#ifndef HEAP_TIMER_H
+#define HEAP_TIMER_H
+
 #include <chrono>
 #include <functional>
 #include <vector>
@@ -39,3 +42,5 @@ public:
     void Pop();
     int GetNextTick();
 };
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef LOG_H
+#define LOG_H
+
 #include <string>
 #include <thread>
 #include <mutex>
@@ -54,3 +57,5 @@ public:
 #define LOG_INFO(format, ...) do {LOG_BASE(1, format, ##__VA_ARGS__)} while (0);
 #define LOG_WARN(format, ...) do {LOG_BASE(2, format, ##__VA_ARGS__)} while (0);
 #define LOG_ERROR(format, ...) do {LOG_BASE(3, format, ##__VA_ARGS__)} while (0);
+
+#endif

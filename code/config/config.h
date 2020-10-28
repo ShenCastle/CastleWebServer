@@ -1,3 +1,6 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #include <getopt.h>
 #include <stdlib.h>
 
@@ -21,3 +24,5 @@ public:
     int log_level;
     int log_queue_size;
 };
+
+#endif;

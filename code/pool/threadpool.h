@@ -1,3 +1,6 @@
+#ifndef THREAD_POOL_H
+#define THREAD_POOL_H
+
 #include <mutex>
 #include <condition_variable>
 #include <queue>
@@ -24,3 +27,5 @@ public:
     template<typename T>
     void AddTask(T&& task);
 };
+
+#endif

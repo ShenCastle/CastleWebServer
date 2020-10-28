@@ -1,3 +1,6 @@
+#ifndef HTTP_REQ_H
+#define HTTP_REQ_H
+
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -55,3 +58,5 @@ public:
     std::string GetPost(const char* key) const;
     bool IsKeepAlive() const;
 };
+
+#endif

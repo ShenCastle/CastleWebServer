@@ -1,3 +1,6 @@
+#ifndef EPOLLER_H
+#define EPOLLER_H
+
 #include <vector>
 #include <sys/epoll.h>
 #include <unistd.h>
@@ -18,3 +21,5 @@ public:
     int GetEventFd(size_t i) const;
     uint32_t GetEvents(size_t i) const;
 };
+
+#endif

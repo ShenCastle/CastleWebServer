@@ -1,3 +1,6 @@
+#ifndef WEBSERVER_H
+#define WEBSERVER_H
+
 #include <unordered_map>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -51,3 +54,5 @@ public:
     ~WebServer();
     void Start();
 };
+
+#endif

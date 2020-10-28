@@ -1,3 +1,6 @@
+#ifndef HTTP_CONN_H
+#define HTTP_CONN_H
+
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <arpa/inet.h>
@@ -39,3 +42,5 @@ public:
     static const char* src_dir;
     static std::atomic<int> user_cnt;
 };
+
+#endif

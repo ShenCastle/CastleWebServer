@@ -1,3 +1,6 @@
+#ifndef SQL_CONN_POOL_H
+#define SQL_CONN_POOL_H
+
 #include <mysql/mysql.h>
 #include <queue>
 #include <mutex>
@@ -33,3 +36,5 @@ public:
     SqlConnRAII(MYSQL** sql, SqlConnPool* connpool);
     ~SqlConnRAII();
 };
+
+#endif

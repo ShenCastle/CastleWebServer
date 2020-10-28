@@ -1,3 +1,6 @@
+#ifndef BLOCK_QUEUE_H
+#define BLOCK_QUEUE_H
+
 #include <deque>
 #include <mutex>
 #include <condition_variable>
@@ -30,3 +33,5 @@ public:
     T GetFront();
     T GetBack();
 };
+
+#endif

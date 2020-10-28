@@ -1,3 +1,6 @@
+#ifndef BUFFER_H
+#define BUFFER_H
+
 #include <cstring>
 #include <iostream>
 #include <unistd.h>
@@ -37,3 +40,5 @@ public:
     ssize_t ReadFd(int fd, int* errno_);
     ssize_t WriteFd(int fd, int* errno_);
 };
+
+#endif

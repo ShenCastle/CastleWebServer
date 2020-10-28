@@ -1,3 +1,6 @@
+#ifndef HTTP_RES_H
+#define HTTP_RES_H
+
 #include <unordered_map>
 #include <fcntl.h>
 #include <unistd.h>
@@ -34,3 +37,5 @@ public:
     size_t GetFileLen() const;
     int GetCode() const;
 };
+
+#endif
