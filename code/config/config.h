@@ -25,4 +25,4 @@ public:
     int log_queue_size;
 };
 
-#endif;
+#endif
