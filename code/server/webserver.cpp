@@ -11,7 +11,7 @@ WebServer::WebServer(
             timer_(new HeapTimer()), threadpool_(new ThreadPool(thread_num)), epoller_(new Epoller()) {
     src_dir_ = getcwd(nullptr, 256);
     assert(src_dir_);
-    strncat(src_dir_, "/resources/", 16);
+    strncat(src_dir_, "/resources", 16);
     HttpConn::user_cnt = 0;
     HttpConn::src_dir = src_dir_;
     SqlConnPool::Instance()->Init("localhost", sql_port, sql_user.c_str(), sql_password.c_str(), db.c_str(), conn_num);
